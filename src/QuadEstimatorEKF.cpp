@@ -198,6 +198,18 @@ MatrixXf QuadEstimatorEKF::GetRbgPrime(float roll, float pitch, float yaw)
   //   that your calculations are reasonable
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  // roll = phi
+  // pitch = theta
+  // yaw = psi
+  RbgPrime(0,0) = -cos(pitch)*sin(yaw);
+  RbgPrime(0,1) = -sin(roll)*sin(pitch)*sin(yaw) - cos(roll)*cos(yaw);
+  RbgPrime(0,2) = -cos(roll)*sin(pitch)*sin(yaw) + sin(roll)*cos(yaw);
+
+  RbgPrime(1,0) = cos(pitch)*cos(yaw);
+  RbgPrime(1,1) = sin(roll)*sin(pitch)*cos(yaw) - cos(roll)*sin(yaw);
+  RbgPrime(1,2) = cos(roll)*sin(pitch)*cos(yaw) + sin(roll)*sin(yaw);
+
+  RbgPrime(2,0) = RbgPrime(2,1) = RbgPrime(2,2) = 0.0; // don't know if this is necessary or not. don't really care
 
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
@@ -290,6 +302,12 @@ void QuadEstimatorEKF::UpdateFromMag(float magYaw)
   //    (you don't want to update your yaw the long way around the circle)
   //  - The magnetomer measurement covariance is available in member variable R_Mag
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  hPrime(6) = 1.0; // set yaw; [0 0 0 0 0 0 1]
+
+  zFromX = hPrime * ekfState;
+  if (magYaw - zFromX[0] > F_PI) {
+
+  }
 
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
