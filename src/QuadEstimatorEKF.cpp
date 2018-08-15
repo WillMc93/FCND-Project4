@@ -256,7 +256,13 @@ void QuadEstimatorEKF::Predict(float dt, V3F accel, V3F gyro)
   gPrime.setIdentity();
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  gPrime(0,3) = gPrime(1,4) = gPrime(2,5) = dt;
 
+  gPrime(3, 6) = (RbgPrime(0) * accel).sum() * dt;
+  gPrime(4, 6) = (RbgPrime(1) * accel).sum() * dt;
+  gPrime(5, 6) = (RbgPrime(2) * accel).sum() * dt;
+
+  ekfCov = gPrime * ekfCov * gPrime.transpose() + Q;
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
@@ -306,9 +312,11 @@ void QuadEstimatorEKF::UpdateFromMag(float magYaw)
 
   zFromX = hPrime * ekfState;
   if (magYaw - zFromX[0] > F_PI) {
-
+      zFromX[0] += 2.0 * F_PI;
   }
-
+  else if (magYaw - zFromX[0] < -F_PI) {
+      zFromX[0] += -2.0 * F_PI;
+  }
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
